@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویجت ارسال پیامک زمان‌بندی شده</title>
+</head>
+<body>
+
+<div>
+    <h2>ارسال پیامک زمان‌بندی شده</h2>
+    <label for="send-time">زمان ارسال پیامک را انتخاب کنید:</label>
+    <input type="datetime-local" id="send-time">
+    <button id="schedule-sms">تنظیم پیامک</button>
+    <p id="status"></p>
+</div>
+
+<script>
+    document.getElementById('schedule-sms').addEventListener('click', function() {
+        const sendTime = new Date(document.getElementById('send-time').value);
+        const now = new Date();
+
+        if (sendTime > now) {
+            const timeDifference = sendTime - now;
+
+            // پیامک را در زمان مشخص شده ارسال می‌کند
+            setTimeout(() => {
+                sendSMS();
+            }, timeDifference);
+
+            document.getElementById('status').textContent = 'پیامک زمان‌بندی شد.';
+        } else {
+            document.getElementById('status').textContent = 'زمان انتخابی معتبر نیست.';
+        }
+    });
+
+    function sendSMS() {
+        // اینجا باید کد ارسال پیامک با استفاده از API SMS.ir قرار بگیرد
+        const apiToken = 'XKJec3da98eLMix0IsOEVnfrxZCCoXVe0rndExzkmpm1iRcshEFJ1ltvVcITcg3d';
+        const message = 'پیامک تستی زمان‌بندی شده';
+        const mobileNumber = '+9809223267087';
+
+        fetch('https://api.sms.ir/v1/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiToken}`
+            },
+            body: JSON.stringify({
+                MobileNumbers: [mobileNumber],
+                Message: message,
+                LineNumber: 'YOUR_LINE_NUMBER',
+                SendDateTime: null
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('پیامک با موفقیت ارسال شد:', data);
+        })
+        .catch(error => {
+            console.error('خطا در ارسال پیامک:', error);
+        });
+    }
+</script>
+
+</body>
+</html>
